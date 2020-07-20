@@ -46,14 +46,15 @@ class Bau(object):
         return random.uniform(0.0, 1.0) < 0.5
 
     def check(self, x, y, w, h):
-        try:
-            for ix in range(x, x + w):
-                for iy in range(y, y + h):
-                  if self.grid[iy][ix] != 0:
+        for ix in range(x, x + w):
+            if ix >= self.grid_width:
+                return False
+            for iy in range(y, y + h):
+                if iy >= self.grid_height:
                     return False
-            return True
-        except:
-            return False
+                if self.grid[iy][ix] != 0:
+                    return False
+        return True
 
     def markup(self, x, y, w, h, e):
         for ix in range(x, x + w):
@@ -67,13 +68,13 @@ class Bau(object):
                 h = min(ms, min(random.randint(1, ms), self.grid_height - y))
                 w = min(ms, min(random.choice([h, 1]), self.grid_width - x))
                 store = True
-                if not self.check(x, y, h, w):
+                if not self.check(x, y, w, h):
                     w, h = 1, 1
-                    if not self.check(x, y, h, w):
+                    if not self.check(x, y, w, h):
                         store = False
                 if store:
-                    self.markup(x, y, h, w, len(elems) + 1)
-                    elems.append([x, y, h, w])
+                    self.markup(x, y, w, h, len(elems) + 1)
+                    elems.append([x, y, w, h])
         return elems
 
     def bauhaus(self, i1, i2, x, y, w, h):
@@ -86,10 +87,10 @@ class Bau(object):
         gs = 8
         elements = self.divide(3)
         for e in elements:
-            x = e[1] * self.w / gs
-            y = e[0] * self.h / gs
-            sx = e[3] * self.w / gs
-            sy = e[2] * self.h / gs
+            x = e[0] * self.w / gs
+            y = e[1] * self.h / gs
+            sx = e[2] * self.w / gs
+            sy = e[3] * self.h / gs
             elem = self.choose_block(sx, sy)
             if elem is not None:
                 self.bauhaus(canvas, elem, x, y, sx, sy)
