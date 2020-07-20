@@ -115,6 +115,7 @@ if __name__ == "__main__":
                 gw = int(param[3:])
             elif param.startswith("-s="):
                 seed = int(param[3:])
+                out_file = "out_{}.png".format(seed)
             else:
                 out_file = param
             
