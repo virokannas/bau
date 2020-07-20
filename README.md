@@ -2,7 +2,7 @@
 
 This is a simple Python script to output stuff like this:
 
-![sample1](images/out_741874.png)
+![sample1](samples/out_741874.png)
 
 ## Why?
 
