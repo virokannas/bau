@@ -98,6 +98,24 @@ class Bau(object):
         canvas = canvas.resize((self.res, self.res), Image.BICUBIC)
         canvas.save(path)
 
-bau = Bau(1024)
-seed = random.randint(1, 1024 * 1024)
-bau.generate(seed, "out_{}.png".format(seed))
+if __name__ == "__main__":
+    import sys
+    res = 1024
+    imageset = "default"
+    gw = 16
+    seed = random.randint(1, 1024 * 1024)
+    out_file = "out_{}.png".format(seed)
+    for param in sys.argv:
+        if param.startswith("-r="):
+            res = int(param[3:])
+        elif param.startswith("-i="):
+            imageset = param[3:]
+        elif param.startswith("-g="):
+            gw = int(param[3:])
+        elif param.startswith("-s="):
+            seed = int(param[3:])
+        else:
+            out_file = param
+            
+    bau = Bau(resolution=res, grid_w=gw, grid_h=gw, imageset=imageset)
+    bau.generate(seed, out_file)
