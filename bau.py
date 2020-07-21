@@ -4,7 +4,7 @@ from PIL import Image, ImageDraw
 
 
 class Bau(object):
-    def __init__(self, grid_w=16, grid_h=16, resolution=1024, imageset="default"):
+    def __init__(self, grid_w=16, grid_h=16, resolution=1024, max_h=3, imageset="default"):
         self.res = resolution
         self.aa = 4  # anti-alias level
         self.w = self.res * self.aa
@@ -12,6 +12,7 @@ class Bau(object):
         self.grid_width = grid_w
         self.grid_height = grid_h
         self.grid = self.makegrid(grid_w, grid_h)
+        self.max_h = max_h
 
         self.all_images = {}
         for a in os.listdir(imageset):
@@ -30,7 +31,7 @@ class Bau(object):
             if ratio == "1/1":
                 return img.rotate(random.choice([0, 90, 180, 270]))
             else:
-                return img
+                return img.rotate(random.choice([0, 180]))
         return None
 
     def makegrid(self, w, h):
@@ -84,8 +85,8 @@ class Bau(object):
     def generate(self, seed, path):
         random.seed(seed)
         canvas = Image.new("RGB", (self.w, self.h), "#FFFFFF")
-        gs = 8
-        elements = self.divide(3)
+        gs = self.grid_width
+        elements = self.divide(self.max_h)
         for e in elements:
             x = e[0] * self.w / gs
             y = e[1] * self.h / gs
@@ -103,6 +104,7 @@ if __name__ == "__main__":
     res = 1024
     imageset = "default"
     gw = 16
+    mh = 3
     seed = random.randint(1, 1024 * 1024)
     out_file = "out_{}.png".format(seed)
     if len(sys.argv)>1:
@@ -113,11 +115,14 @@ if __name__ == "__main__":
                 imageset = param[3:]
             elif param.startswith("-g="):
                 gw = int(param[3:])
+            elif param.startswith("-m="):
+                mh = int(param[3:])
             elif param.startswith("-s="):
                 seed = int(param[3:])
                 out_file = "out_{}.png".format(seed)
-            else:
+            elif param.endswith(".png") or param.endswith(".jpg"):
                 out_file = param
             
-    bau = Bau(resolution=res, grid_w=gw, grid_h=gw, imageset=imageset)
+    bau = Bau(resolution=res, grid_w=gw, grid_h=gw, max_h=mh, imageset=imageset)
     bau.generate(seed, out_file)
+    print("seed: {}".format(seed))
